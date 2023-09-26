@@ -1,10 +1,15 @@
-from brownie import interface
+from brownie import interface, chain
 import json
 from scripts.get_token_info import get_active_tokens
 import discord
 from discord.ext import commands, tasks
 
-data = json.load(open('./config.json'))['velo']
+if chain.id == 10:
+    is_velo = True
+    data = json.load(open('./config.json'))['velo']
+else:
+    is_velo = False
+    data = json.load(open('./config.json'))['aero']
 
 oracle = interface.IOracle(data['oracle'])
 connectors = data['connectors']
@@ -73,12 +78,14 @@ async def update_status_and_nickname():
     watching = discord.Activity(name=f"Bribes: {round(bribes/1000,2)}K", type=discord.ActivityType.watching)
     await bot.change_presence(activity=watching)
 
-    # Your specific server ID (replace with your actual server ID)
-    TARGET_GUILD_ID = data['server_id']  # replace this with your server's ID
+    # server id
+    TARGET_GUILD_ID = data['server_id']
 
-    # Check if the bot is in the target server and set its nickname there
     target_guild = bot.get_guild(TARGET_GUILD_ID)
     await target_guild.me.edit(nick=f"Rewards: {round(incentives/1000,2)}K")
 
 # Run the bot with your token
-bot.run("MTE1NTQ0MjYyMDkxMTMzNzQ5Mg.Gsh8MB.JKT9FoHUUFr39tHk8jgI3vAHE7oQvjFRpBCUf8")
+if is_velo:
+    bot.run("MTE1NTQ0MjYyMDkxMTMzNzQ5Mg.Gsh8MB.JKT9FoHUUFr39tHk8jgI3vAHE7oQvjFRpBCUf8")
+else:
+    bot.run("MTE1NjE4ODI2ODY5MDQxNTY1Nw.GSIM4C.TwR49rZ9pNC5YQ1QdDrR9_KOCQgRc-iN4ThJSI")

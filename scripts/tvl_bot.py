@@ -67,12 +67,13 @@ async def update_status_and_nickname():
     watching = discord.Activity(name=f"TVL {'Velodrome' if is_velo else 'Aerodrome'}", type=discord.ActivityType.watching)
     await bot.change_presence(activity=watching)
 
-    # Your specific server ID (replace with your actual server ID)
-    TARGET_GUILD_ID = data['server_id']  # replace this with your server's ID
+    # server id
+    TARGET_GUILD_ID = data['server_id']
 
-    # Check if the bot is in the target server and set its nickname there
     target_guild = bot.get_guild(TARGET_GUILD_ID)
     await target_guild.me.edit(nick=f"{round(tvl/1000000,2)}M")
 
-# Run the bot with your token
-bot.run("MTE1NTUwMTUyOTM0ODk4NDkxNA.Gai4v1.lwQmOfbKnImDaokirlsHb-K3ekaS7scJEJyHfs")
+if is_velo:
+    bot.run("MTE1NTUwMTUyOTM0ODk4NDkxNA.Gai4v1.lwQmOfbKnImDaokirlsHb-K3ekaS7scJEJyHfs")
+else:
+    bot.run("MTE1NjE4NjQ0NzgyMTQxODUzNg.GlQjJT.qU7Hqxyi6GQSIjK7mzrKfpIof4fNL8QwB1M4HI")
