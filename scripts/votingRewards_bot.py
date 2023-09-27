@@ -49,13 +49,18 @@ async def update_status_and_nickname():
         prices.extend([i/1e18 for i in out])
     tokens['price'] = prices
 
-
+    seen = set()
     results = [0] * LIMIT
     offset = 0
     while len(results) == LIMIT:
         results = su.epochsLatest(LIMIT,offset)
 
         for res in results:
+            pool = res[1]
+            if pool in seen:
+                continue
+            else:
+                seen.add(pool)
             bribes_votingrewards = res[4]
             fees_votingrewards = res[5]
             

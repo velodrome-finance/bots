@@ -48,11 +48,17 @@ async def update_status_and_nickname():
         prices.extend([i/1e18 for i in out])
     tokens['price'] = prices
 
+    seen = set()
     results = [0] * LIMIT
     offset = 0
     while len(results) == LIMIT:
         results = su.all(LIMIT,offset,'0x0000000000000000000000000000000000000000')
         for res in results:
+            pool = res[0]
+            if pool in seen:
+                continue
+            else:
+                seen.add(pool)
             token0, reserve0, token1, reserve1 = res[5].lower(), res[6], res[8].lower(), res[9]
             if token0 in tokens.index:
                 tokens.at[token0, 'reserves_raw'] += reserve0
