@@ -3,6 +3,7 @@ import json
 from scripts.get_token_info import get_active_tokens
 import discord
 from discord.ext import commands, tasks
+import asyncio
 
 if chain.id == 10:
     is_velo = True
@@ -26,12 +27,18 @@ intents.typing = False
 intents.presences = False
 
 # Set up the bot with the command prefix '!'
-bot = commands.Bot(command_prefix='!', intents=intents)
+bot_bribes = commands.Bot(command_prefix='!', intents=intents)
+bot_fees = commands.Bot(command_prefix='?', intents=intents)
 
-@bot.event
+@bot_bribes.event
 async def on_ready():
-    print(f'Logged in as {bot.user.name} ({bot.user.id})')
-    update_status_and_nickname.start()  # Start the background task
+    print(f'Logged in as {bot_bribes.user.name} ({bot_bribes.user.id})')
+    update_status_and_nickname.start()
+
+@bot_fees.event
+async def on_ready():
+    print(f'Logged in as {bot_fees.user.name} ({bot_fees.user.id})')
+
 
 @tasks.loop(minutes=30) 
 async def update_status_and_nickname():
@@ -76,21 +83,31 @@ async def update_status_and_nickname():
     tokens['bribes_raw'] = tokens['bribes_raw']/10**tokens['decimals']
     tokens['fees_raw'] = tokens['fees_raw']/10**tokens['decimals']
 
-    bribes = (tokens['bribes_raw'] * tokens['price']).sum()
-    incentives = ( (tokens['bribes_raw'] + tokens['fees_raw']) * tokens['price']).sum()
+    bribes = ( tokens['bribes_raw'] * tokens['price']).sum()
+    fees = ( tokens['fees_raw'] * tokens['price']).sum()
+    incentives = ( (tokens['bribes_raw'] + tokens['fees_raw']) * tokens['price'] ).sum()
 
-
-    watching = discord.Activity(name=f"Bribes: {round(bribes/1000,2)}K", type=discord.ActivityType.watching)
-    await bot.change_presence(activity=watching)
+    watching = discord.Activity(name=f"{round(incentives/1000,2)}K total", type=discord.ActivityType.watching)
+    await bot_bribes.change_presence(activity=watching)
 
     # server id
     TARGET_GUILD_ID = data['server_id']
 
-    target_guild = bot.get_guild(TARGET_GUILD_ID)
-    await target_guild.me.edit(nick=f"Rewards: {round(incentives/1000,2)}K")
+    target_guild = bot_bribes.get_guild(TARGET_GUILD_ID)
+    await target_guild.me.edit(nick=f"Rewards: {round(bribes/1000,2)}K")
 
-# Run the bot with your token
-if is_velo:
-    bot.run("MTE1NTQ0MjYyMDkxMTMzNzQ5Mg.Gsh8MB.JKT9FoHUUFr39tHk8jgI3vAHE7oQvjFRpBCUf8")
-else:
-    bot.run("MTE1NjE4ODI2ODY5MDQxNTY1Nw.GSIM4C.TwR49rZ9pNC5YQ1QdDrR9_KOCQgRc-iN4ThJSI")
+    watching = discord.Activity(name=f"{round(incentives/1000,2)}K total", type=discord.ActivityType.watching)
+    await bot_fees.change_presence(activity=watching)
+
+    # server id
+    TARGET_GUILD_ID = data['server_id']
+
+    target_guild = bot_fees.get_guild(TARGET_GUILD_ID)
+    await target_guild.me.edit(nick=f"Fees: {round(fees/1000,2)}K")
+
+
+loop = asyncio.new_event_loop()
+asyncio.set_event_loop(loop)
+loop.create_task(bot_fees.start('MTE1NTQ0MjYyMDkxMTMzNzQ5Mg.Gsh8MB.JKT9FoHUUFr39tHk8jgI3vAHE7oQvjFRpBCUf8'))
+loop.create_task(bot_bribes.start('MTE1NjE4ODI2ODY5MDQxNTY1Nw.GSIM4C.TwR49rZ9pNC5YQ1QdDrR9_KOCQgRc-iN4ThJSI'))
+loop.run_forever()
