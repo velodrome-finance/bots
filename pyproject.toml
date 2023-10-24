@@ -1,0 +1,22 @@
+[tool.poetry]
+name = "velodrome-bots"
+version = "0.1.0"
+description = "Assorted velodrome Discord bots"
+authors = ["Philip Nuzhnyi <philip.nuzhnyy@gmail.com>"]
+readme = "README.md"
+packages = [{include = "price_bot", from = "src"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+web3 = "6.11.1"
+protobuf = "4.21.6"
+async-lru = "2.0.4"
+discord-py = "2.3.2"
+python-dotenv = "1.0.0"
+
+[tool.poetry.scripts]
+price_bot = "price_bot.__main__:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
