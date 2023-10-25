@@ -1,4 +1,3 @@
-import os
 import asyncio
 
 from typing import List
@@ -12,9 +11,6 @@ from .data import Token, Price
 class PriceBot(discord.Client):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-
-        # an attribute we can access from our task
-        self.counter = 0
 
     async def setup_hook(self) -> None:
         # start the task to run in the background
@@ -47,8 +43,7 @@ class PriceBot(discord.Client):
             [source_token_price] = await Price.get_prices([source_token])
 
             await self.update_nick_for_all_servers(f"{STABLE_TOKEN_SYMBOL} {source_token_price.pretty_price}")
-            await self.update_presence(f"Velo {self.counter}")
-            self.counter += 1
+            await self.update_presence(f"Velo")
         except Exception as ex:
             print(f"Ticker failed with {ex}")
 
