@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Assorted velodrome Discord bots"
 authors = ["Philip Nuzhnyi <philip.nuzhnyy@gmail.com>"]
 readme = "README.md"
-packages = [{include = "price_bot", from = "src"}]
 
 [tool.poetry.dependencies]
 python = "^3.10"
