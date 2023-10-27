@@ -36,4 +36,4 @@ COPY ./price_bot /app/price_bot
 WORKDIR /app
 
 ENTRYPOINT /docker-entrypoint.sh $0 $@
-CMD [ "python", "-m", "price_bot.__main__"]
+CMD [ "python", "-m", "bots.__main__"]

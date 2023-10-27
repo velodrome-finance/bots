@@ -8,14 +8,13 @@ load_dotenv()
 LP_SUGAR_ABI=load_local_json_as_string("abi/lp_sugar.json")
 PRICE_ORACLE_ABI=load_local_json_as_string("abi/price_oracle.json")
 
-DISCORD_TOKEN=os.environ["DISCORD_TOKEN"]
+DISCORD_TOKEN_VELO_PRICING=os.environ["DISCORD_TOKEN_VELO_PRICING"]
 WEB3_PROVIDER_URI=os.environ["WEB3_PROVIDER_URI"]
 LP_SUGAR_ADDRESS=os.environ["LP_SUGAR_ADDRESS"]
 PRICE_ORACLE_ADDRESS=os.environ["PRICE_ORACLE_ADDRESS"]
 
 # token we are converting from
-SOURCE_TOKEN_SYMBOL=os.environ["SOURCE_TOKEN_SYMBOL"]
-SOURCE_TOKEN_ADDRESS=normalize_address(os.environ["SOURCE_TOKEN_ADDRESS"])
+VELO_TOKEN_ADDRESS=normalize_address(os.environ["VELO_TOKEN_ADDRESS"])
 
 CONNECTOR_TOKENS_ADDRESSES=list(map(lambda a: normalize_address(a), os.environ["CONNECTOR_TOKENS_ADDRESSES"].split(",")))
 

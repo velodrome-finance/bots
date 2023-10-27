@@ -9,7 +9,7 @@
 - `cp .env.example .env`
 - set `DISCORD_TOKEN` for your bot
 - `poetry install`
-- `poetry run python -m price_bot.__main__`
+- `poetry run python -m bots.__main__`
 
 ## Setting up Bots on Discord
 
