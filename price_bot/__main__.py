@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from typing import List
 
@@ -7,6 +8,7 @@ from discord.ext import tasks
 
 from .settings import DISCORD_TOKEN, SOURCE_TOKEN_ADDRESS, STABLE_TOKEN_SYMBOL, BOT_TICKER_INTERVAL_MINUTES
 from .data import Token, Price
+from .helpers import LOGGING_HANDLER, LOGGING_LEVEL, LOGGER
 
 class PriceBot(discord.Client):
     def __init__(self, *args, **kwargs):
@@ -17,8 +19,8 @@ class PriceBot(discord.Client):
         self.ticker.start()
 
     async def on_ready(self):
-        print(f'Logged in as {self.user} (ID: {self.user.id})')
-        print('------')
+        LOGGER.debug(f'Logged in as {self.user} (ID: {self.user.id})')
+        LOGGER.debug('------')
 
     async def update_bot_member_nick(self, guild, nick: str):
         bot_member = await guild.fetch_member(self.user.id)
@@ -37,15 +39,11 @@ class PriceBot(discord.Client):
     async def ticker(self):
         try:
             source_token = await Token.get_by_token_address(SOURCE_TOKEN_ADDRESS)
-
-            print(f"got source token {source_token}")
-
             [source_token_price] = await Price.get_prices([source_token])
-
             await self.update_nick_for_all_servers(f"{STABLE_TOKEN_SYMBOL} {source_token_price.pretty_price}")
             await self.update_presence(f"Velo")
         except Exception as ex:
-            print(f"Ticker failed with {ex}")
+            LOGGER.error(f"Ticker failed with {ex}")
 
     @ticker.before_loop
     async def before_my_task(self):
@@ -53,6 +51,12 @@ class PriceBot(discord.Client):
 
 async def main():
     """Main function."""
+
+    # configure discord logging handler
+    discord_logger = logging.getLogger('discord')
+    discord_logger.setLevel(LOGGING_LEVEL)
+    discord_logger.addHandler(LOGGING_HANDLER)
+
     bot = PriceBot(intents=discord.Intents.default())
     await bot.start(DISCORD_TOKEN)
 
