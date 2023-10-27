@@ -31,8 +31,7 @@ COPY --from=builder-base $VENV_PATH $VENV_PATH
 COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
-COPY ./price_bot /app/price_bot
-# COPY ./.env /app/.env
+COPY ./bots /app/bots
 WORKDIR /app
 
 ENTRYPOINT /docker-entrypoint.sh $0 $@
