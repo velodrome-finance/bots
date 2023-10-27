@@ -3,6 +3,7 @@
 ## Pre-reqs
 
 - [Poetry](https://python-poetry.org/)
+- [Nox](https://nox.thea.codes/en/stable/)
 
 ## Running locally
 
@@ -10,6 +11,18 @@
 - set `DISCORD_TOKEN` for your bot
 - `poetry install`
 - `poetry run python -m bots.__main__`
+
+## Before you push
+
+```bash
+poetry run nox
+```
+
+Got issues with formatting?
+
+```bash
+poetry run nox -rs black
+```
 
 ## Setting up Bots on Discord
 
