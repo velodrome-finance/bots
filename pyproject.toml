@@ -13,9 +13,6 @@ async-lru = "2.0.4"
 discord-py = "2.3.2"
 python-dotenv = "1.0.0"
 
-[tool.poetry.scripts]
-price_bot = "price_bot.__main__:main"
-
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.4.3"
 
