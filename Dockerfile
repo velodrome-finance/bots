@@ -24,6 +24,17 @@ WORKDIR $PYSETUP_PATH
 COPY ./poetry.lock ./pyproject.toml ./
 RUN poetry install --only main
 
+FROM builder-base as test
+
+COPY --from=builder-base $VENV_PATH $VENV_PATH
+
+COPY . /app
+WORKDIR /app
+
+RUN poetry install --only dev
+RUN pip install --upgrade nox
+RUN poetry run nox
+
 FROM python-base as runtime
 
 COPY --from=builder-base $VENV_PATH $VENV_PATH
@@ -35,4 +46,5 @@ COPY ./bots /app/bots
 WORKDIR /app
 
 ENTRYPOINT /docker-entrypoint.sh $0 $@
+
 CMD [ "python", "-m", "bots.__main__"]
