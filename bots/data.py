@@ -45,7 +45,6 @@ class Token:
     @classmethod
     @cache_in_seconds(SUGAR_TOKENS_CACHE_MINUTES * 60)
     async def get_all_listed_tokens(cls):
-        print("calling get_all_listed_tokens")
         sugar = w3.eth.contract(address=LP_SUGAR_ADDRESS, abi=LP_SUGAR_ABI)
         tokens = await sugar.functions.tokens(2000, 0, ADDRESS_ZERO).call()
         return list(
@@ -87,7 +86,6 @@ class Price:
     async def _get_prices(
         cls, tokens: Tuple[Token], stable_token: str, connector_tokens: Tuple[str]
     ):
-        print("calling pricer")
         price_oracle = w3.eth.contract(
             address=PRICE_ORACLE_ADDRESS, abi=PRICE_ORACLE_ABI
         )
