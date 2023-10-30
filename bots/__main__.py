@@ -4,8 +4,8 @@ import logging
 import discord
 
 from .settings import (
-    DISCORD_TOKEN_VELO_PRICING,
-    VELO_TOKEN_ADDRESS,
+    DISCORD_TOKEN_PRICING,
+    TOKEN_ADDRESS,
     STABLE_TOKEN_ADDRESS,
 )
 from .data import Token
@@ -21,13 +21,13 @@ async def main():
     discord_logger.setLevel(LOGGING_LEVEL)
     discord_logger.addHandler(LOGGING_HANDLER)
 
-    velo = await Token.get_by_token_address(VELO_TOKEN_ADDRESS)
-    usdc = await Token.get_by_token_address(STABLE_TOKEN_ADDRESS)
+    token = await Token.get_by_token_address(TOKEN_ADDRESS)
+    stable = await Token.get_by_token_address(STABLE_TOKEN_ADDRESS)
 
     bot = PriceBot(
-        source_token=velo, target_token=usdc, intents=discord.Intents.default()
+        source_token=token, target_token=stable, intents=discord.Intents.default()
     )
-    await bot.start(DISCORD_TOKEN_VELO_PRICING)
+    await bot.start(DISCORD_TOKEN_PRICING)
 
 
 if __name__ == "__main__":
