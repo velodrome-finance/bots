@@ -1,7 +1,9 @@
+import functools
+import asyncio
 from web3 import AsyncWeb3, AsyncHTTPProvider
 from web3.constants import ADDRESS_ZERO
 from dataclasses import dataclass
-from typing import Tuple, List
+from typing import Tuple, List, Dict
 
 from .settings import (
     WEB3_PROVIDER_URI,
@@ -13,8 +15,9 @@ from .settings import (
     STABLE_TOKEN_ADDRESS,
     SUGAR_TOKENS_CACHE_MINUTES,
     ORACLE_PRICES_CACHE_MINUTES,
+    PRICE_BATCH_SIZE,
 )
-from .helpers import cache_in_seconds, normalize_address
+from .helpers import cache_in_seconds, normalize_address, chunk
 
 w3 = AsyncWeb3(AsyncHTTPProvider(WEB3_PROVIDER_URI))
 
@@ -31,6 +34,9 @@ class Token:
     symbol: str
     decimals: int
     listed: bool
+
+    def value_from_bigint(self, value: float) -> float:
+        return value / 10**self.decimals
 
     @classmethod
     def from_tuple(cls, t: Tuple):
@@ -125,9 +131,83 @@ class Price:
             Defaults to CONNECTOR_TOKENS_ADDRESSES.
 
         Returns:
-            _type_: _description_
+            List: list of Price objects
         """
-        # XX: lists are not cacheable, convert them to tuples so cache is happy
-        return await cls._get_prices(
-            tuple(tokens), stable_token, tuple(connector_tokens)
+        batches = await asyncio.gather(
+            # XX: lists are not cacheable, convert them to tuples so lru cache is happy
+            *map(
+                lambda ts: cls._get_prices(
+                    tuple(ts), stable_token, tuple(connector_tokens)
+                ),
+                list(chunk(tokens, PRICE_BATCH_SIZE)),
+            )
         )
+        return functools.reduce(lambda l1, l2: l1 + l2, batches, [])
+
+
+@dataclass(frozen=True)
+class LiquidityPool:
+    """Data class for Liquidity Pool
+
+    based on:
+    https://github.com/velodrome-finance/sugar/blob/v2/contracts/LpSugar.vy#L31
+    """
+
+    lp: str
+    symbol: str
+    token0: Token
+    reserve0: float
+    token1: Token
+    reserve1: float
+
+    @classmethod
+    def from_tuple(cls, t: Tuple, tokens: Dict):
+        token0 = normalize_address(t[5])
+        token1 = normalize_address(t[8])
+
+        return LiquidityPool(
+            lp=normalize_address(t[0]),
+            symbol=t[1],
+            token0=tokens.get(token0),
+            reserve0=t[6],
+            token1=tokens.get(token1),
+            reserve1=t[9],
+        )
+
+    @classmethod
+    async def get_pools(cls):
+        tokens = await Token.get_all_listed_tokens()
+        tokens = {t.token_address: t for t in tokens}
+
+        sugar = w3.eth.contract(address=LP_SUGAR_ADDRESS, abi=LP_SUGAR_ABI)
+        pools = await sugar.functions.all(1000, 0, ADDRESS_ZERO).call()
+        return list(
+            filter(
+                lambda p: p is not None,
+                map(lambda p: LiquidityPool.from_tuple(p, tokens), pools),
+            )
+        )
+
+    @classmethod
+    async def tvl(cls, pools):
+        result = 0
+
+        tokens = await Token.get_all_listed_tokens()
+        prices = await Price.get_prices(tokens)
+        prices = {price.token.token_address: price for price in prices}
+
+        for pool in pools:
+            t0 = pool.token0
+            t1 = pool.token1
+
+            if t0:
+                result += (
+                    t0.value_from_bigint(pool.reserve0) * prices[t0.token_address].price
+                )
+
+            if t1:
+                result += (
+                    t1.value_from_bigint(pool.reserve1) * prices[t1.token_address].price
+                )
+
+        return result

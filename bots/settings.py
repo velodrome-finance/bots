@@ -9,9 +9,13 @@ LP_SUGAR_ABI = load_local_json_as_string("abi/lp_sugar.json")
 PRICE_ORACLE_ABI = load_local_json_as_string("abi/price_oracle.json")
 
 DISCORD_TOKEN_PRICING = os.environ["DISCORD_TOKEN_PRICING"]
+DISCORD_TOKEN_TVL = os.environ["DISCORD_TOKEN_TVL"]
 WEB3_PROVIDER_URI = os.environ["WEB3_PROVIDER_URI"]
 LP_SUGAR_ADDRESS = os.environ["LP_SUGAR_ADDRESS"]
 PRICE_ORACLE_ADDRESS = os.environ["PRICE_ORACLE_ADDRESS"]
+PRICE_BATCH_SIZE = int(os.environ["PRICE_BATCH_SIZE"])
+
+TARGET_NETWORK = os.environ["TARGET_NETWORK"]
 
 # token we are converting from
 TOKEN_ADDRESS = normalize_address(os.environ["TOKEN_ADDRESS"])

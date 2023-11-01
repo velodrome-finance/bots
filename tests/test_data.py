@@ -4,8 +4,8 @@ from dotenv import load_dotenv
 
 load_dotenv(".env.example")
 
-from bots.settings import TOKEN_ADDRESS # noqa
-from bots.data import Token, Price # noqa
+from bots.settings import TOKEN_ADDRESS  # noqa
+from bots.data import Token, Price, LiquidityPool  # noqa
 
 
 @pytest.mark.asyncio
@@ -21,3 +21,10 @@ async def test_get_prices():
     assert len(prices) == 1
     [price] = prices
     assert price.pretty_price != 0
+
+
+@pytest.mark.asyncio
+async def test_tvl():
+    pools = await LiquidityPool.get_pools()
+    tvl = await LiquidityPool.tvl(pools)
+    assert tvl != 0
