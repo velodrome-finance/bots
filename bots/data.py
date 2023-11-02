@@ -39,7 +39,7 @@ class Token:
         return value / 10**self.decimals
 
     @classmethod
-    def from_tuple(cls, t: Tuple):
+    def from_tuple(cls, t: Tuple) -> 'Token':
         (token_address, symbol, decimals, _, listed) = t
         return Token(
             token_address=normalize_address(token_address),
@@ -50,7 +50,7 @@ class Token:
 
     @classmethod
     @cache_in_seconds(SUGAR_TOKENS_CACHE_MINUTES * 60)
-    async def get_all_listed_tokens(cls):
+    async def get_all_listed_tokens(cls) -> List['Token']:
         sugar = w3.eth.contract(address=LP_SUGAR_ADDRESS, abi=LP_SUGAR_ABI)
         tokens = await sugar.functions.tokens(2000, 0, ADDRESS_ZERO).call()
         return list(
@@ -58,7 +58,7 @@ class Token:
         )
 
     @classmethod
-    async def get_by_token_address(cls, token_address: str):
+    async def get_by_token_address(cls, token_address: str) -> 'Token':
         """Get details for specific token
 
         Args:
@@ -120,7 +120,7 @@ class Price:
         tokens: List[Token],
         stable_token: str = STABLE_TOKEN_ADDRESS,
         connector_tokens: List[str] = CONNECTOR_TOKENS_ADDRESSES,
-    ):
+    ) -> List['Price']:
         """Get prices for tokens in target stable token
 
         Args:
@@ -134,9 +134,9 @@ class Price:
             List: list of Price objects
         """
         batches = await asyncio.gather(
-            # XX: lists are not cacheable, convert them to tuples so lru cache is happy
             *map(
                 lambda ts: cls._get_prices(
+                    # XX: lists are not cacheable, convert them to tuples so lru cache is happy
                     tuple(ts), stable_token, tuple(connector_tokens)
                 ),
                 list(chunk(tokens, PRICE_BATCH_SIZE)),
@@ -161,7 +161,7 @@ class LiquidityPool:
     reserve1: float
 
     @classmethod
-    def from_tuple(cls, t: Tuple, tokens: Dict):
+    def from_tuple(cls, t: Tuple, tokens: Dict) -> 'LiquidityPool':
         token0 = normalize_address(t[5])
         token1 = normalize_address(t[8])
 
@@ -175,7 +175,7 @@ class LiquidityPool:
         )
 
     @classmethod
-    async def get_pools(cls):
+    async def get_pools(cls) -> List['LiquidityPool']:
         tokens = await Token.get_all_listed_tokens()
         tokens = {t.token_address: t for t in tokens}
 
@@ -189,7 +189,7 @@ class LiquidityPool:
         )
 
     @classmethod
-    async def tvl(cls, pools):
+    async def tvl(cls, pools) -> float:
         result = 0
 
         tokens = await Token.get_all_listed_tokens()
