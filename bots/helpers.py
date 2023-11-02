@@ -2,7 +2,7 @@ import logging
 import os
 import sys
 
-
+from typing import List
 from web3 import Web3
 from async_lru import alru_cache
 
@@ -23,6 +23,11 @@ def load_local_json_as_string(relative_path: str) -> str:
         result = f.read()
 
     return result
+
+
+def chunk(list_to_chunk: List, n: int):
+    for i in range(0, len(list_to_chunk), n):
+        yield list_to_chunk[i : i + n]
 
 
 # logging
