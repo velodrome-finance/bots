@@ -6,7 +6,7 @@ from .settings import (
     DISCORD_TOKEN_TVL,
     TOKEN_ADDRESS,
     STABLE_TOKEN_ADDRESS,
-    TARGET_NETWORK,
+    PROTOCOL_NAME,
 )
 from .data import Token
 from .helpers import LOGGING_HANDLER, LOGGING_LEVEL
@@ -26,7 +26,7 @@ async def main():
     stable = await Token.get_by_token_address(STABLE_TOKEN_ADDRESS)
 
     price_bot = PriceBot(source_token=token, target_token=stable)
-    tvl_bot = TVLBot(target_network=TARGET_NETWORK)
+    tvl_bot = TVLBot(protocol_name=PROTOCOL_NAME)
 
     await asyncio.gather(
         price_bot.start(DISCORD_TOKEN_PRICING), tvl_bot.start(DISCORD_TOKEN_TVL)

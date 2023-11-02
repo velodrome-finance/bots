@@ -15,7 +15,7 @@ LP_SUGAR_ADDRESS = os.environ["LP_SUGAR_ADDRESS"]
 PRICE_ORACLE_ADDRESS = os.environ["PRICE_ORACLE_ADDRESS"]
 PRICE_BATCH_SIZE = int(os.environ["PRICE_BATCH_SIZE"])
 
-TARGET_NETWORK = os.environ["TARGET_NETWORK"]
+PROTOCOL_NAME = os.environ["PROTOCOL_NAME"]
 
 # token we are converting from
 TOKEN_ADDRESS = normalize_address(os.environ["TOKEN_ADDRESS"])

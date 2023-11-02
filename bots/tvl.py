@@ -7,14 +7,14 @@ from .ticker import TickerBot
 
 
 class TVLBot(TickerBot):
-    def __init__(self, *args, target_network: str, **kwargs):
+    def __init__(self, *args, protocol_name: str, **kwargs):
         super().__init__(*args, **kwargs)
-        self.target_network = target_network
+        self.protocol_name = protocol_name
 
     async def on_ready(self):
         LOGGER.debug(f"Logged in as {self.user} (ID: {self.user.id})")
         LOGGER.debug("------")
-        await self.update_presence(f"TVL {self.target_network}")
+        await self.update_presence(f"TVL {self.protocol_name}")
 
     @tasks.loop(seconds=BOT_TICKER_INTERVAL_MINUTES * 60)
     async def ticker(self):
