@@ -16,6 +16,7 @@ from .settings import (
     SUGAR_TOKENS_CACHE_MINUTES,
     ORACLE_PRICES_CACHE_MINUTES,
     PRICE_BATCH_SIZE,
+    GOOD_ENOUGH_PAGINATION_LIMIT,
 )
 from .helpers import cache_in_seconds, normalize_address, chunk
 
@@ -52,7 +53,7 @@ class Token:
     @cache_in_seconds(SUGAR_TOKENS_CACHE_MINUTES * 60)
     async def get_all_listed_tokens(cls) -> List['Token']:
         sugar = w3.eth.contract(address=LP_SUGAR_ADDRESS, abi=LP_SUGAR_ABI)
-        tokens = await sugar.functions.tokens(2000, 0, ADDRESS_ZERO).call()
+        tokens = await sugar.functions.tokens(GOOD_ENOUGH_PAGINATION_LIMIT, 0, ADDRESS_ZERO).call()
         return list(
             filter(lambda t: t.listed, map(lambda t: Token.from_tuple(t), tokens))
         )
@@ -180,7 +181,7 @@ class LiquidityPool:
         tokens = {t.token_address: t for t in tokens}
 
         sugar = w3.eth.contract(address=LP_SUGAR_ADDRESS, abi=LP_SUGAR_ABI)
-        pools = await sugar.functions.all(1000, 0, ADDRESS_ZERO).call()
+        pools = await sugar.functions.all(GOOD_ENOUGH_PAGINATION_LIMIT, 0, ADDRESS_ZERO).call()
         return list(
             filter(
                 lambda p: p is not None,
