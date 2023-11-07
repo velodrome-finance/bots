@@ -23,6 +23,6 @@ class FeesBot(TickerBot):
             fees = sum(map(lambda p: p.total_fees, pools))
 
             await self.update_nick_for_all_servers(f"Fees: {round(fees/1000, 2)}K")
-            await self.update_presence(f"{len(pools)} pools ({self.protocol_name})")
+            await self.update_presence(f"{len(pools)} pools")
         except Exception as ex:
             LOGGER.error(f"Ticker failed with {ex}")
