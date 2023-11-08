@@ -27,7 +27,7 @@ class RewardsBot(TickerBot):
                 f"Rewards: {amount_to_k_string(fees + bribes)}"
             )
             await self.update_presence(
-                f"{amount_to_k_string(fees)} fees and {amount_to_k_string(bribes)} incentives"
+                f"{amount_to_k_string(fees)} fees & {amount_to_k_string(bribes)} incentives"
             )
         except Exception as ex:
             LOGGER.error(f"Ticker failed with {ex}")
