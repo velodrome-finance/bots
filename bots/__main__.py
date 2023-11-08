@@ -5,7 +5,7 @@ from .settings import (
     DISCORD_TOKEN_PRICING,
     DISCORD_TOKEN_TVL,
     DISCORD_TOKEN_FEES,
-    DISCORD_TOKEN_INCENTIVES,
+    DISCORD_TOKEN_REWARDS,
     TOKEN_ADDRESS,
     STABLE_TOKEN_ADDRESS,
     PROTOCOL_NAME,
@@ -15,7 +15,7 @@ from .helpers import LOGGING_HANDLER, LOGGING_LEVEL
 from .price import PriceBot
 from .tvl import TVLBot
 from .fees import FeesBot
-from .incentives import IncentivesBot
+from .rewards import RewardsBot
 
 
 async def main():
@@ -32,13 +32,13 @@ async def main():
     price_bot = PriceBot(source_token=token, target_token=stable)
     tvl_bot = TVLBot(protocol_name=PROTOCOL_NAME)
     fees_bot = FeesBot(protocol_name=PROTOCOL_NAME)
-    incentives_bot = IncentivesBot(protocol_name=PROTOCOL_NAME)
+    rewards_bot = RewardsBot(protocol_name=PROTOCOL_NAME)
 
     await asyncio.gather(
         price_bot.start(DISCORD_TOKEN_PRICING),
         fees_bot.start(DISCORD_TOKEN_FEES),
         tvl_bot.start(DISCORD_TOKEN_TVL),
-        incentives_bot.start(DISCORD_TOKEN_INCENTIVES),
+        rewards_bot.start(DISCORD_TOKEN_REWARDS),
     )
 
 

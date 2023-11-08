@@ -38,7 +38,7 @@ async def test_fees():
 
 
 @pytest.mark.asyncio
-async def test_incentives():
+async def test_rewards():
     lpes = await LiquidityPoolEpoch.fetch_latest()
     fees = sum(map(lambda lpe: lpe.total_fees, lpes))
     bribes = sum(map(lambda lpe: lpe.total_bribes, lpes))

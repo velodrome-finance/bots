@@ -6,7 +6,7 @@ from .helpers import LOGGER, amount_to_k_string
 from .ticker import TickerBot
 
 
-class IncentivesBot(TickerBot):
+class RewardsBot(TickerBot):
     def __init__(self, *args, protocol_name: str, **kwargs):
         super().__init__(*args, **kwargs)
         self.protocol_name = protocol_name
