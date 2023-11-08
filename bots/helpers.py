@@ -30,6 +30,11 @@ def chunk(list_to_chunk: List, n: int):
         yield list_to_chunk[i : i + n]
 
 
+def amount_to_k_string(amount: float) -> str:
+    """Turns 2000 to "2K" """
+    return f"{round(amount/1000, 2)}K"
+
+
 # logging
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "DEBUG")
 LOGGING_HANDLER = logging.StreamHandler(sys.stdout)

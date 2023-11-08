@@ -270,3 +270,60 @@ class LiquidityPool:
             result += self.token1_fees.amount_in_stable
 
         return result
+
+
+@dataclass(frozen=True)
+class LiquidityPoolEpoch:
+    """Data class for Liquidity Pool
+
+    based on: https://github.com/velodrome-finance/sugar/blob/v2/contracts/LpSugar.vy#L69
+    """
+
+    pool_address: str
+    bribes: List[Amount]
+    fees: List[Amount]
+
+    @classmethod
+    async def fetch_latest(cls):
+        tokens = await Token.get_all_listed_tokens()
+        prices = await Price.get_prices(tokens)
+
+        prices = {price.token.token_address: price for price in prices}
+        tokens = {t.token_address: t for t in tokens}
+
+        sugar = w3.eth.contract(address=LP_SUGAR_ADDRESS, abi=LP_SUGAR_ABI)
+        pool_epochs = await sugar.functions.epochsLatest(
+            GOOD_ENOUGH_PAGINATION_LIMIT, 0
+        ).call()
+
+        result = []
+
+        for pe in pool_epochs:
+            pool_address, bribes, fees = pe[1], pe[4], pe[5]
+
+            bribes = list(
+                filter(
+                    lambda b: b is not None,
+                    map(lambda b: Amount.build(b[0], b[1], tokens, prices), bribes),
+                )
+            )
+            fees = list(
+                filter(
+                    lambda f: f is not None,
+                    map(lambda f: Amount.build(f[0], f[1], tokens, prices), fees),
+                )
+            )
+
+            result.append(
+                LiquidityPoolEpoch(pool_address=pool_address, bribes=bribes, fees=fees)
+            )
+
+        return result
+
+    @property
+    def total_fees(self) -> float:
+        return sum(map(lambda fee: fee.amount_in_stable, self.fees))
+
+    @property
+    def total_bribes(self) -> float:
+        return sum(map(lambda bribe: bribe.amount_in_stable, self.bribes))
