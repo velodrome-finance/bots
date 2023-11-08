@@ -28,3 +28,10 @@ async def test_tvl():
     pools = await LiquidityPool.get_pools()
     tvl = await LiquidityPool.tvl(pools)
     assert tvl != 0
+
+
+@pytest.mark.asyncio
+async def test_fees():
+    pools = await LiquidityPool.get_pools()
+    fees = sum(map(lambda p: p.total_fees, pools))
+    assert fees != 0

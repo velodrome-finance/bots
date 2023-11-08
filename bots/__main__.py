@@ -4,6 +4,7 @@ import logging
 from .settings import (
     DISCORD_TOKEN_PRICING,
     DISCORD_TOKEN_TVL,
+    DISCORD_TOKEN_FEES,
     TOKEN_ADDRESS,
     STABLE_TOKEN_ADDRESS,
     PROTOCOL_NAME,
@@ -12,6 +13,7 @@ from .data import Token
 from .helpers import LOGGING_HANDLER, LOGGING_LEVEL
 from .price import PriceBot
 from .tvl import TVLBot
+from .fees import FeesBot
 
 
 async def main():
@@ -27,9 +29,12 @@ async def main():
 
     price_bot = PriceBot(source_token=token, target_token=stable)
     tvl_bot = TVLBot(protocol_name=PROTOCOL_NAME)
+    fees_bot = FeesBot(protocol_name=PROTOCOL_NAME)
 
     await asyncio.gather(
-        price_bot.start(DISCORD_TOKEN_PRICING), tvl_bot.start(DISCORD_TOKEN_TVL)
+        price_bot.start(DISCORD_TOKEN_PRICING),
+        fees_bot.start(DISCORD_TOKEN_FEES),
+        tvl_bot.start(DISCORD_TOKEN_TVL),
     )
 
 

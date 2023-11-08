@@ -151,6 +151,36 @@ class Price:
 
 
 @dataclass(frozen=True)
+class Amount:
+    token: Token
+    amount: float
+    price: Price
+
+    @classmethod
+    def build(
+        cls,
+        address: str,
+        amount: float,
+        tokens: Dict[str, Token],
+        prices: Dict[str, "Price"],
+    ) -> "Amount":
+        address = normalize_address(address)
+
+        if address not in tokens or address not in prices:
+            return None
+
+        token = tokens[address]
+
+        return Amount(
+            token=token, amount=token.value_from_bigint(amount), price=prices[address]
+        )
+
+    @property
+    def amount_in_stable(self) -> float:
+        return self.amount * self.price.price
+
+
+@dataclass(frozen=True)
 class LiquidityPool:
     """Data class for Liquidity Pool
 
@@ -164,11 +194,17 @@ class LiquidityPool:
     reserve0: float
     token1: Token
     reserve1: float
+    token0_fees: Amount
+    token1_fees: Amount
 
     @classmethod
-    def from_tuple(cls, t: Tuple, tokens: Dict) -> "LiquidityPool":
+    def from_tuple(
+        cls, t: Tuple, tokens: Dict[str, Token], prices: Dict[str, Price]
+    ) -> "LiquidityPool":
         token0 = normalize_address(t[5])
         token1 = normalize_address(t[8])
+        token0_fees = t[23]
+        token1_fees = t[24]
 
         return LiquidityPool(
             lp=normalize_address(t[0]),
@@ -177,12 +213,17 @@ class LiquidityPool:
             reserve0=t[6],
             token1=tokens.get(token1),
             reserve1=t[9],
+            token0_fees=Amount.build(token0, token0_fees, tokens, prices),
+            token1_fees=Amount.build(token1, token1_fees, tokens, prices),
         )
 
     @classmethod
     async def get_pools(cls) -> List["LiquidityPool"]:
         tokens = await Token.get_all_listed_tokens()
+        prices = await Price.get_prices(tokens)
+
         tokens = {t.token_address: t for t in tokens}
+        prices = {price.token.token_address: price for price in prices}
 
         sugar = w3.eth.contract(address=LP_SUGAR_ADDRESS, abi=LP_SUGAR_ABI)
         pools = await sugar.functions.all(
@@ -191,7 +232,7 @@ class LiquidityPool:
         return list(
             filter(
                 lambda p: p is not None,
-                map(lambda p: LiquidityPool.from_tuple(p, tokens), pools),
+                map(lambda p: LiquidityPool.from_tuple(p, tokens, prices), pools),
             )
         )
 
@@ -216,5 +257,16 @@ class LiquidityPool:
                 result += (
                     t1.value_from_bigint(pool.reserve1) * prices[t1.token_address].price
                 )
+
+        return result
+
+    @property
+    def total_fees(self) -> float:
+        result = 0
+
+        if self.token0_fees:
+            result += self.token0_fees.amount_in_stable
+        if self.token1_fees:
+            result += self.token1_fees.amount_in_stable
 
         return result
