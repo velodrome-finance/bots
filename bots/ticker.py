@@ -28,9 +28,8 @@ class TickerBot(discord.Client):
     async def update_presence(self, presence_text: str):
         # https://discordpy.readthedocs.io/en/latest/api.html#discord.ActivityType
         await self.change_presence(
-            activity=discord.Activity(
-                name=presence_text, type=discord.ActivityType.watching
-            )
+            # XX: emoji does not work for some reason
+            activity=discord.CustomActivity(name=presence_text, emoji="😀")
         )
 
     @tasks.loop(seconds=BOT_TICKER_INTERVAL_MINUTES * 60)

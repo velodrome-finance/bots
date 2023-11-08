@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 load_dotenv(".env.example")
 
 from bots.settings import TOKEN_ADDRESS  # noqa
-from bots.data import Token, Price, LiquidityPool  # noqa
+from bots.data import Token, Price, LiquidityPool, LiquidityPoolEpoch  # noqa
 
 
 @pytest.mark.asyncio
@@ -35,3 +35,13 @@ async def test_fees():
     pools = await LiquidityPool.get_pools()
     fees = sum(map(lambda p: p.total_fees, pools))
     assert fees != 0
+
+
+@pytest.mark.asyncio
+async def test_rewards():
+    lpes = await LiquidityPoolEpoch.fetch_latest()
+    fees = sum(map(lambda lpe: lpe.total_fees, lpes))
+    bribes = sum(map(lambda lpe: lpe.total_bribes, lpes))
+
+    assert fees != 0
+    assert bribes != 0
