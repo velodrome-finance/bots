@@ -21,14 +21,14 @@ class PriceBot(TickerBot):
     async def on_ready(self):
         LOGGER.debug(f"Logged in as {self.user} (ID: {self.user.id})")
         LOGGER.debug("------")
-        await self.update_presence(self.source_token.symbol)
+        await self.update_presence(f"Based on {self.target_token.symbol} onchain quote")
 
     @tasks.loop(seconds=BOT_TICKER_INTERVAL_MINUTES * 60)
     async def ticker(self):
         try:
             [source_token_price] = await Price.get_prices([self.source_token])
             await self.update_nick_for_all_servers(
-                f"{self.target_token.symbol} {source_token_price.pretty_price}"
+                f"~${source_token_price.pretty_price} / {self.source_token.symbol}"
             )
         except Exception as ex:
             LOGGER.error(f"Ticker failed with {ex}")

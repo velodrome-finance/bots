@@ -35,6 +35,11 @@ def amount_to_k_string(amount: float) -> str:
     return f"{round(amount/1000, 2)}K"
 
 
+def amount_to_m_string(amount: float) -> str:
+    """Turns 2000000 to "2M" """
+    return f"{round(amount/1000000, 2)}M"
+
+
 # logging
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "DEBUG")
 LOGGING_HANDLER = logging.StreamHandler(sys.stdout)
