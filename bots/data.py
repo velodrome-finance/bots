@@ -1,5 +1,6 @@
 import functools
 import asyncio
+from thefuzz import fuzz
 from web3 import AsyncWeb3, AsyncHTTPProvider
 from web3.constants import ADDRESS_ZERO
 from dataclasses import dataclass
@@ -74,7 +75,7 @@ class Token:
             normalized_address = normalize_address(token_address)
             tokens = await cls.get_all_listed_tokens()
             return next(t for t in tokens if t.token_address == normalized_address)
-        except:
+        except Exception:
             return None
 
 
@@ -261,8 +262,19 @@ class LiquidityPool:
         try:
             a = normalize_address(address)
             return next(pool for pool in pools if pool.lp == a)
-        except:
+        except Exception:
             return None
+
+    @classmethod
+    async def search(cls, query: str, limit: int = 10) -> List["LiquidityPool"]:
+        def match_score(query: str, symbol: str):
+            return fuzz.token_sort_ratio(query, symbol)
+
+        pools = await cls.get_pools()
+        pools_with_ratio = list(map(lambda p: (p, match_score(query, p.symbol)), pools))
+        pools_with_ratio.sort(key=lambda p: p[1], reverse=True)
+
+        return list(map(lambda pwr: pwr[0], pools_with_ratio))[:limit]
 
     @classmethod
     async def tvl(cls, pools) -> float:

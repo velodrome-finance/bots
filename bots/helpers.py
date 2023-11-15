@@ -7,6 +7,10 @@ from web3 import Web3
 from async_lru import alru_cache
 
 
+def is_address(value: str) -> bool:
+    return Web3.is_address(value)
+
+
 def cache_in_seconds(seconds: int):
     return alru_cache(ttl=seconds)
 
