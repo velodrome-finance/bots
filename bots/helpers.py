@@ -35,6 +35,15 @@ def amount_to_k_string(amount: float) -> str:
     return f"{round(amount/1000, 2)}K"
 
 
+def format_currency(value: float, symbol: str = "$", prefix: bool = True) -> str:
+    v = "{:0,.2f}".format(value)
+    return f"{symbol}{v}" if prefix else f"{v} {symbol}"
+
+
+def format_percentage(value: float) -> str:
+    return "{:0,.2f} %".format(value)
+
+
 # logging
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "DEBUG")
 LOGGING_HANDLER = logging.StreamHandler(sys.stdout)
