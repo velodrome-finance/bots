@@ -1,8 +1,8 @@
 from discord.ext import tasks
 
 from .settings import BOT_TICKER_INTERVAL_MINUTES
-from .data import LiquidityPool
-from .helpers import LOGGER
+from .data import LiquidityPool, Token
+from .helpers import LOGGER, amount_to_m_string
 from .ticker import TickerBot
 
 
@@ -21,6 +21,8 @@ class TVLBot(TickerBot):
         try:
             pools = await LiquidityPool.get_pools()
             tvl = await LiquidityPool.tvl(pools)
-            await self.update_nick_for_all_servers(f"{round(tvl/1000000, 2)}M")
+            tokens = await Token.get_all_listed_tokens()
+            await self.update_nick_for_all_servers(f"TVL ~${amount_to_m_string(tvl)}")
+            await self.update_presence(f"Based on {len(tokens)} listed tokens")
         except Exception as ex:
             LOGGER.error(f"Ticker failed with {ex}")

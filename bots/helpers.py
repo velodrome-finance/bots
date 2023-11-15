@@ -44,6 +44,11 @@ def format_percentage(value: float) -> str:
     return "{:0,.2f} %".format(value)
 
 
+def amount_to_m_string(amount: float) -> str:
+    """Turns 2000000 to "2M" """
+    return f"{round(amount/1000000, 2)}M"
+
+
 # logging
 LOGGING_LEVEL = os.getenv("LOGGING_LEVEL", "DEBUG")
 LOGGING_HANDLER = logging.StreamHandler(sys.stdout)
