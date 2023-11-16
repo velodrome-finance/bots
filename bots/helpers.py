@@ -1,8 +1,9 @@
 import logging
 import os
 import sys
+import urllib
 
-from typing import List
+from typing import List, Dict
 from web3 import Web3
 from async_lru import alru_cache
 
@@ -51,6 +52,10 @@ def format_percentage(value: float) -> str:
 def amount_to_m_string(amount: float) -> str:
     """Turns 2000000 to "2M" """
     return f"{round(amount/1000000, 2)}M"
+
+
+def make_app_url(base_url: str, path: str, params: Dict) -> str:
+    return f"{base_url}{path}?{urllib.parse.urlencode(params)}"
 
 
 # logging

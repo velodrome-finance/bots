@@ -35,9 +35,9 @@ async def on_select_pool(
         else address_or_pool
     )
     tvl = await LiquidityPool.tvl([pool])
-    embed = await PoolStats().render(pool, tvl)
-
-    await response.send_message(embed=embed)
+    await response.send_message(
+        await PoolStats().render(pool, tvl), suppress_embeds=True
+    )
 
 
 @bot.tree.command(name="pool", description="Get data for specific pool")

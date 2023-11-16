@@ -6,6 +6,7 @@ from .settings import (
     DISCORD_TOKEN_TVL,
     DISCORD_TOKEN_FEES,
     DISCORD_TOKEN_REWARDS,
+    DISCORD_TOKEN_COMMANDER,
     TOKEN_ADDRESS,
     STABLE_TOKEN_ADDRESS,
     PROTOCOL_NAME,
@@ -44,7 +45,7 @@ async def main():
         fees_bot.start(DISCORD_TOKEN_FEES),
         tvl_bot.start(DISCORD_TOKEN_TVL),
         rewards_bot.start(DISCORD_TOKEN_REWARDS),
-        commander_bot.start(DISCORD_TOKEN_TVL),
+        commander_bot.start(DISCORD_TOKEN_COMMANDER),
     )
 
 

@@ -4,7 +4,7 @@ from thefuzz import fuzz
 from web3 import AsyncWeb3, AsyncHTTPProvider
 from web3.constants import ADDRESS_ZERO
 from dataclasses import dataclass
-from typing import Tuple, List, Dict
+from typing import Tuple, List, Dict, Optional
 
 from .settings import (
     WEB3_PROVIDER_URI,
@@ -15,6 +15,7 @@ from .settings import (
     CONNECTOR_TOKENS_ADDRESSES,
     STABLE_TOKEN_ADDRESS,
     SUGAR_TOKENS_CACHE_MINUTES,
+    SUGAR_LPS_CACHE_MINUTES,
     ORACLE_PRICES_CACHE_MINUTES,
     PRICE_BATCH_SIZE,
     GOOD_ENOUGH_PAGINATION_LIMIT,
@@ -53,16 +54,20 @@ class Token:
     @classmethod
     @cache_in_seconds(SUGAR_TOKENS_CACHE_MINUTES * 60)
     async def get_all_listed_tokens(cls) -> List["Token"]:
+        tokens = await cls.get_all_tokens()
+        return list(filter(lambda t: t.listed, tokens))
+
+    @classmethod
+    @cache_in_seconds(SUGAR_TOKENS_CACHE_MINUTES * 60)
+    async def get_all_tokens(cls) -> List["Token"]:
         sugar = w3.eth.contract(address=LP_SUGAR_ADDRESS, abi=LP_SUGAR_ABI)
         tokens = await sugar.functions.tokens(
             GOOD_ENOUGH_PAGINATION_LIMIT, 0, ADDRESS_ZERO
         ).call()
-        return list(
-            filter(lambda t: t.listed, map(lambda t: Token.from_tuple(t), tokens))
-        )
+        return list(map(lambda t: Token.from_tuple(t), tokens))
 
     @classmethod
-    async def get_by_token_address(cls, token_address: str) -> "Token":
+    async def get_by_token_address(cls, token_address: str) -> Optional["Token"]:
         """Get details for specific token
 
         Args:
@@ -238,8 +243,9 @@ class LiquidityPool:
         )
 
     @classmethod
+    @cache_in_seconds(SUGAR_LPS_CACHE_MINUTES * 60)
     async def get_pools(cls) -> List["LiquidityPool"]:
-        tokens = await Token.get_all_listed_tokens()
+        tokens = await Token.get_all_tokens()
         prices = await Price.get_prices(tokens)
 
         tokens = {t.token_address: t for t in tokens}
@@ -257,6 +263,7 @@ class LiquidityPool:
         )
 
     @classmethod
+    @cache_in_seconds(SUGAR_LPS_CACHE_MINUTES * 60)
     async def by_address(cls, address: str) -> "LiquidityPool":
         pools = await cls.get_pools()
         try:
@@ -317,25 +324,29 @@ class LiquidityPool:
 
     @property
     def volume(self) -> float:
-        return self.volume_pct * (
-            self.token0_fees.amount_in_stable + self.token1_fees.amount_in_stable
-        )
+        t0 = self.token0_fees.amount_in_stable if self.token0_fees else 0
+        t1 = self.token1_fees.amount_in_stable if self.token1_fees else 0
+        return self.volume_pct * (t0 + t1)
 
     @property
     def token0_volume(self) -> float:
-        return self.token0_fees.amount * self.volume_pct
+        return self.token0_fees.amount * self.volume_pct if self.token0_fees else 0
 
     @property
     def token1_volume(self) -> float:
-        return self.token1_fees.amount * self.volume_pct
+        return self.token1_fees.amount * self.volume_pct if self.token1_fees else 0
 
     def apr(self, tvl: float) -> float:
         day_seconds = 24 * 60 * 60
-        reward_value = self.emissions.amount_in_stable
+        reward_value = self.emissions.amount_in_stable if self.emissions else 0
         reward = reward_value * day_seconds
-        staked_pct = 100 * self.gauge_total_supply / self.total_supply
+        staked_pct = (
+            100 * self.gauge_total_supply / self.total_supply
+            if self.total_supply != 0
+            else 0
+        )
         staked_tvl = tvl * staked_pct / 100
-        return (reward / staked_tvl) * (100 * 365)
+        return (reward / staked_tvl) * (100 * 365) if staked_tvl != 0 else 0
 
 
 @dataclass(frozen=True)
@@ -350,6 +361,7 @@ class LiquidityPoolEpoch:
     fees: List[Amount]
 
     @classmethod
+    @cache_in_seconds(SUGAR_LPS_CACHE_MINUTES * 60)
     async def fetch_latest(cls):
         tokens = await Token.get_all_listed_tokens()
         prices = await Price.get_prices(tokens)
