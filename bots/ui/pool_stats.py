@@ -46,7 +46,7 @@ class PoolStats:
 >   - {token1_volume}
 > - ~{volume} volume this epoch
 > - ~{fees} fees this epoch
->
+> 
 > [Deposit 🐖]({deposit_url}) ● [Incentivize 🙋]({incentivize_url})
 """.format(
             **template_args
