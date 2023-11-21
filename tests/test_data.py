@@ -53,8 +53,9 @@ async def test_liquidity_pool_stats():
     for pool in pools:
         tvl = await LiquidityPool.tvl([pool])
         fields = [
-            pool.token0,
-            pool.token1,
+            # XX: these can be None for non listed tokens
+            # pool.token0,
+            # pool.token1,
             pool.is_stable,
             pool.pool_fee_percentage,
             pool.apr(tvl),

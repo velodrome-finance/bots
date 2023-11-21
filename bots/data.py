@@ -245,7 +245,7 @@ class LiquidityPool:
     @classmethod
     @cache_in_seconds(SUGAR_LPS_CACHE_MINUTES * 60)
     async def get_pools(cls) -> List["LiquidityPool"]:
-        tokens = await Token.get_all_tokens()
+        tokens = await Token.get_all_listed_tokens()
         prices = await Price.get_prices(tokens)
 
         tokens = {t.token_address: t for t in tokens}
@@ -278,6 +278,9 @@ class LiquidityPool:
             return fuzz.token_sort_ratio(query, symbol)
 
         pools = await cls.get_pools()
+        pools = list(
+            filter(lambda p: p.token0 is not None and p.token1 is not None, pools)
+        )
         pools_with_ratio = list(map(lambda p: (p, match_score(query, p.symbol)), pools))
         pools_with_ratio.sort(key=lambda p: p[1], reverse=True)
 
