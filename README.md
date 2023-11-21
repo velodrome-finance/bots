@@ -30,6 +30,7 @@ poetry run nox -rs black
 - click `New Application` (top right corner)
 - come up with a sensible name for the bot, accept TOS, click `Create`
 - click `Bot` in the left hand side panel
+- for command bots, enable `MESSAGE CONTENT INTENT`
 - click `Reset Token`
 - copy newly created token and keep it to share with your trusted dev
 - click `OAuth2` in the left had side panel
