@@ -35,5 +35,5 @@ poetry run nox -rs black
 - click `OAuth2` in the left had side panel
 - click `URL Generator` in the sub menu
 - in `Scopes`, select `bot`
-- in `Bot Permissions`, select `Change Nickname`
+- in `Bot Permissions`, select `Change Nickname`; for `Command` bot select `Send Messages` and `Use Slash Commands`
 - copy `Generated URL` and open it in a new tab to add bot to a server you control
