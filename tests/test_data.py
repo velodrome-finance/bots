@@ -45,3 +45,28 @@ async def test_rewards():
 
     assert fees != 0
     assert bribes != 0
+
+
+@pytest.mark.asyncio
+async def test_liquidity_pool_stats():
+    pools = await LiquidityPool.get_pools()
+    for pool in pools:
+        tvl = await LiquidityPool.tvl([pool])
+        fields = [
+            pool.token0,
+            pool.token1,
+            pool.is_stable,
+            pool.pool_fee_percentage,
+            pool.apr(tvl),
+            pool.volume,
+            pool.token0_volume,
+            pool.token1_volume,
+            pool.token0_fees.amount_in_stable if pool.token0_fees else 0,
+            pool.token1_fees.amount_in_stable if pool.token1_fees else 0,
+            pool.token0_fees.amount if pool.token0_fees else 0,
+            pool.token1_fees.amount if pool.token1_fees else 0,
+            pool.reserve0.amount if pool.reserve0 else 0,
+            pool.reserve1.amount if pool.reserve1 else 0,
+        ]
+        for field in fields:
+            assert field is not None

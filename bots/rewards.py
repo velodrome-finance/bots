@@ -24,7 +24,7 @@ class RewardsBot(TickerBot):
             bribes = sum(map(lambda lpe: lpe.total_bribes, lpes))
 
             await self.update_nick_for_all_servers(
-                f"Rewards: ~${amount_to_k_string(fees + bribes)}"
+                f"Rewards ~${amount_to_k_string(fees + bribes)}"
             )
             await self.update_presence(
                 f"~${amount_to_k_string(fees)} + ~${amount_to_k_string(bribes)} in fees & incentives for voters"  # noqa

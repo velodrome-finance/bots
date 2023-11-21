@@ -1,10 +1,15 @@
 import logging
 import os
 import sys
+import urllib
 
-from typing import List
+from typing import List, Dict
 from web3 import Web3
 from async_lru import alru_cache
+
+
+def is_address(value: str) -> bool:
+    return Web3.is_address(value)
 
 
 def cache_in_seconds(seconds: int):
@@ -35,9 +40,22 @@ def amount_to_k_string(amount: float) -> str:
     return f"{round(amount/1000, 2)}K"
 
 
+def format_currency(value: float, symbol: str = "$", prefix: bool = True) -> str:
+    v = "{:0,.2f}".format(value)
+    return f"{symbol}{v}" if prefix else f"{v} {symbol}"
+
+
+def format_percentage(value: float) -> str:
+    return "{:0,.2f} %".format(value)
+
+
 def amount_to_m_string(amount: float) -> str:
     """Turns 2000000 to "2M" """
     return f"{round(amount/1000000, 2)}M"
+
+
+def make_app_url(base_url: str, path: str, params: Dict) -> str:
+    return f"{base_url}{path}?{urllib.parse.urlencode(params)}"
 
 
 # logging

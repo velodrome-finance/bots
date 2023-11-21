@@ -6,16 +6,21 @@ from .settings import (
     DISCORD_TOKEN_TVL,
     DISCORD_TOKEN_FEES,
     DISCORD_TOKEN_REWARDS,
+    DISCORD_TOKEN_COMMANDER,
     TOKEN_ADDRESS,
     STABLE_TOKEN_ADDRESS,
     PROTOCOL_NAME,
 )
 from .data import Token
-from .helpers import LOGGING_HANDLER, LOGGING_LEVEL
+from .helpers import (
+    LOGGING_HANDLER,
+    LOGGING_LEVEL,
+)
 from .price import PriceBot
 from .tvl import TVLBot
 from .fees import FeesBot
 from .rewards import RewardsBot
+from .commander import CommanderBot
 
 
 async def main():
@@ -33,12 +38,14 @@ async def main():
     tvl_bot = TVLBot(protocol_name=PROTOCOL_NAME)
     fees_bot = FeesBot(protocol_name=PROTOCOL_NAME)
     rewards_bot = RewardsBot(protocol_name=PROTOCOL_NAME)
+    commander_bot = CommanderBot()
 
     await asyncio.gather(
         price_bot.start(DISCORD_TOKEN_PRICING),
         fees_bot.start(DISCORD_TOKEN_FEES),
         tvl_bot.start(DISCORD_TOKEN_TVL),
         rewards_bot.start(DISCORD_TOKEN_REWARDS),
+        commander_bot.start(DISCORD_TOKEN_COMMANDER),
     )
 
 
