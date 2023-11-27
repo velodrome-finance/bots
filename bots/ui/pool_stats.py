@@ -37,14 +37,14 @@ class PoolStats:
         )
 
         emojis = {
-            "dashgrey": self.emojis.get("dashgrey"),
-            "dashwhite": self.emojis.get("dashwhite"),
-            "volume": self.emojis.get("volume"),
-            "apr": self.emojis.get("apr"),
-            "incentives": self.emojis.get("incentives"),
-            "emissions": self.emojis.get("emissions"),
+            "dashgrey": self.emojis.get("dashgrey", "·"),
+            "dashwhite": self.emojis.get("dashwhite", "●"),
+            "volume": self.emojis.get("volume", ":droplet:"),
+            "apr": self.emojis.get("apr", ":chart_with_upwards_trend:"),
+            "incentives": self.emojis.get("incentives", ":carrot:"),
+            "emissions": self.emojis.get("emissions", ":zap:"),
             "space": self.emojis.get("space", " "),
-            "deposit": self.emojis.get("deposit"),
+            "deposit": self.emojis.get("deposit", ":pig2:"),
             "coinplaceholder": self.emojis.get("coinplaceholder", ":coin:"),
         }
 
@@ -75,14 +75,10 @@ class PoolStats:
 
         # Header row with pool symbol
         # and TVL + Fee Below
+        fee_percentage_str = format_percentage(pool.pool_fee_percentage)
         embed.add_field(
             name=f"{pool.symbol}",
-            value=" · ".join(
-                [
-                    f"TVL {format_currency(tvl)}"
-                    f"Fee: {format_percentage(pool.pool_fee_percentage)}"
-                ]
-            ),
+            value=f"TVL {format_currency(tvl)} · Fee: {fee_percentage_str}",
             inline=False,
         )
 
