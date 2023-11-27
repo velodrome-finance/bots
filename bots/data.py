@@ -212,6 +212,7 @@ class LiquidityPool:
     gauge_total_supply: float
     emissions: Amount
     emissions_token: Token
+    weekly_emissions: Amount
 
     @classmethod
     def from_tuple(
@@ -223,6 +224,8 @@ class LiquidityPool:
         token1_fees = t[24]
         emissions_token = normalize_address(t[18])
         emissions = t[17]
+
+        seconds_in_a_week = 7 * 24 * 60 * 60
 
         return LiquidityPool(
             lp=normalize_address(t[0]),
@@ -240,6 +243,9 @@ class LiquidityPool:
             gauge_total_supply=t[12],
             emissions_token=tokens.get(emissions_token),
             emissions=Amount.build(emissions_token, emissions, tokens, prices),
+            weekly_emissions=Amount.build(
+                emissions_token, emissions * seconds_in_a_week, tokens, prices
+            ),
         )
 
     @classmethod

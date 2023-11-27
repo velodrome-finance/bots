@@ -45,7 +45,7 @@ class PoolStats:
             "emissions": self.emojis.get("emissions", ":zap:"),
             "space": self.emojis.get("space", " "),
             "deposit": self.emojis.get("deposit", ":pig2:"),
-            "coinplaceholder": self.emojis.get("coinplaceholder", ":coin:"),
+            "coin": self.emojis.get("coinplaceholder", ":coin:"),
         }
 
         token0_volume_coin = format_currency(
@@ -65,9 +65,11 @@ class PoolStats:
             pool.reserve1.amount_in_stable if pool.reserve1 else 0
         )
         emissions_coin = format_currency(
-            pool.emissions.amount, symbol=pool.emissions.token.symbol, prefix=False
+            pool.weekly_emissions.amount,
+            symbol=pool.emissions.token.symbol,
+            prefix=False,
         )
-        emissions_stable = format_currency(pool.emissions.amount_in_stable)
+        emissions_stable = format_currency(pool.weekly_emissions.amount_in_stable)
 
         embed = discord.Embed()
 
@@ -85,26 +87,20 @@ class PoolStats:
         # vertical space
         embed.add_field(name="", value=f"{emojis['space']}", inline=False)
 
-        token0_coin_icon = self.emojis.get(
-            pool.token0.symbol.lower(), emojis["coinplaceholder"]
-        )
+        coin_icon = emojis["coin"]
 
         # token0 reserve: top row in coin
         # bottom row in stable
         embed.add_field(
-            name=f"{token0_coin_icon} {token0_volume_coin}{emojis['space'] * 3}",
+            name=f"{coin_icon} {token0_volume_coin}{emojis['space'] * 3}",
             value=f"{emojis['dashgrey']} _~{token0_volume_stable}_",
             inline=True,
-        )
-
-        token1_coin_icon = self.emojis.get(
-            pool.token1.symbol.lower(), emojis["coinplaceholder"]
         )
 
         # token1 reserve: top row in coin
         # bottom row in stable
         embed.add_field(
-            name=f"{token1_coin_icon} {token1_volume_coin}",
+            name=f"{coin_icon} {token1_volume_coin}",
             value=f"{emojis['dashgrey']} _~{token1_volume_stable}_",
             inline=True,
         )
