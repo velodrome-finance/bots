@@ -212,6 +212,7 @@ class LiquidityPool:
     gauge_total_supply: float
     emissions: Amount
     emissions_token: Token
+    weekly_emissions: Amount
 
     @classmethod
     def from_tuple(
@@ -223,6 +224,8 @@ class LiquidityPool:
         token1_fees = t[24]
         emissions_token = normalize_address(t[18])
         emissions = t[17]
+
+        seconds_in_a_week = 7 * 24 * 60 * 60
 
         return LiquidityPool(
             lp=normalize_address(t[0]),
@@ -240,6 +243,9 @@ class LiquidityPool:
             gauge_total_supply=t[12],
             emissions_token=tokens.get(emissions_token),
             emissions=Amount.build(emissions_token, emissions, tokens, prices),
+            weekly_emissions=Amount.build(
+                emissions_token, emissions * seconds_in_a_week, tokens, prices
+            ),
         )
 
     @classmethod
@@ -277,10 +283,18 @@ class LiquidityPool:
         def match_score(query: str, symbol: str):
             return fuzz.token_sort_ratio(query, symbol)
 
+        query_lowercase = query.lower()
         pools = await cls.get_pools()
         pools = list(
             filter(lambda p: p.token0 is not None and p.token1 is not None, pools)
         )
+
+        # look for exact match first, i.e. we get proper pool symbol in query (case insensitive)
+        exact_match = list(filter(lambda p: p.symbol.lower() == query_lowercase, pools))
+
+        if len(exact_match) == 1:
+            return exact_match
+
         pools_with_ratio = list(map(lambda p: (p, match_score(query, p.symbol)), pools))
         pools_with_ratio.sort(key=lambda p: p[1], reverse=True)
 
@@ -400,6 +414,15 @@ class LiquidityPoolEpoch:
             )
 
         return result
+
+    @classmethod
+    async def fetch_for_pool(cls, pool_address: str) -> "LiquidityPoolEpoch":
+        pool_epochs = await cls.fetch_latest()
+        try:
+            a = normalize_address(pool_address)
+            return next(pe for pe in pool_epochs if pe.pool_address == a)
+        except Exception:
+            return None
 
     @property
     def total_fees(self) -> float:
