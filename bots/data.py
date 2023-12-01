@@ -149,8 +149,7 @@ class Price:
         results = []
 
         for cnt, price in enumerate(prices):
-            # XX: decimals are auto set to 18
-            # see
+            # XX: decimals are auto set to 18, see
             # https://github.com/velodrome-finance/oracle/blob/main/contracts/VeloOracle.sol#L126
             results.append(Price(token=tokens[cnt], price=price / 10**18))
 
