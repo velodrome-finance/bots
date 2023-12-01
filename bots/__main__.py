@@ -24,7 +24,7 @@ from .commander import CommanderBot
 
 
 async def main():
-    """Main function."""
+    """Run configured bots"""
 
     # configure discord logging handler
     discord_logger = logging.getLogger("discord")
