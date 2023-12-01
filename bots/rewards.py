@@ -7,6 +7,8 @@ from .ticker import TickerBot
 
 
 class RewardsBot(TickerBot):
+    """Rewards bot shows rewards, fees and incentives for the latest epoch"""
+
     def __init__(self, *args, protocol_name: str, **kwargs):
         super().__init__(*args, **kwargs)
         self.protocol_name = protocol_name

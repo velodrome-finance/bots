@@ -7,6 +7,8 @@ from .ticker import TickerBot
 
 
 class PriceBot(TickerBot):
+    """Price bot shows target token price in stable coin"""
+
     def __init__(self, *args, source_token: Token, target_token: Token, **kwargs):
         """Create price bot for specific source token to target token
 

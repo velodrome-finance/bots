@@ -7,6 +7,8 @@ from .settings import BOT_TICKER_INTERVAL_MINUTES
 
 
 class TickerBot(discord.Client):
+    """Base bot class for tickers: periodically update nick + presence"""
+
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs, intents=discord.Intents.default())
 
@@ -27,10 +29,7 @@ class TickerBot(discord.Client):
 
     async def update_presence(self, presence_text: str):
         # https://discordpy.readthedocs.io/en/latest/api.html#discord.ActivityType
-        await self.change_presence(
-            # XX: emoji does not work for some reason
-            activity=discord.CustomActivity(name=presence_text, emoji="😀")
-        )
+        await self.change_presence(activity=discord.CustomActivity(name=presence_text))
 
     @tasks.loop(seconds=BOT_TICKER_INTERVAL_MINUTES * 60)
     async def ticker(self):
