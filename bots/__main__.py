@@ -34,19 +34,23 @@ async def main():
     token = await Token.get_by_token_address(TOKEN_ADDRESS)
     stable = await Token.get_by_token_address(STABLE_TOKEN_ADDRESS)
 
-    price_bot = PriceBot(source_token=token, target_token=stable)
-    tvl_bot = TVLBot(protocol_name=PROTOCOL_NAME)
-    fees_bot = FeesBot(protocol_name=PROTOCOL_NAME)
-    rewards_bot = RewardsBot(protocol_name=PROTOCOL_NAME)
-    commander_bot = CommanderBot()
+    bot_specs = [
+        (DISCORD_TOKEN_PRICING, PriceBot(source_token=token, target_token=stable)),
+        (DISCORD_TOKEN_TVL, TVLBot(protocol_name=PROTOCOL_NAME)),
+        (DISCORD_TOKEN_FEES, FeesBot(protocol_name=PROTOCOL_NAME)),
+        (DISCORD_TOKEN_REWARDS, RewardsBot(protocol_name=PROTOCOL_NAME)),
+        (DISCORD_TOKEN_COMMANDER, CommanderBot()),
+    ]
 
-    await asyncio.gather(
-        price_bot.start(DISCORD_TOKEN_PRICING),
-        fees_bot.start(DISCORD_TOKEN_FEES),
-        tvl_bot.start(DISCORD_TOKEN_TVL),
-        rewards_bot.start(DISCORD_TOKEN_REWARDS),
-        commander_bot.start(DISCORD_TOKEN_COMMANDER),
+    # only run bots that have discord tokens configured
+    tasks = list(
+        map(
+            lambda spec: spec[1].start(spec[0]),
+            filter(lambda spec: spec[0], bot_specs),
+        )
     )
+
+    await asyncio.gather(*tasks)
 
 
 if __name__ == "__main__":
