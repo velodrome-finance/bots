@@ -1,4 +1,20 @@
-# bots
+# 🤖 Velodrome and Aerodrome Discord Bots
+
+## Table of Contents
+
+- [Meet the Bots](#meet-the-bots)
+- [Pre reqs](#pre-reqs)
+- [Running locally](#running-locally)
+- [Before you push](#before-you-push)
+- [Setting up Bots on Discord](#setting-up-bots-on-discord)
+
+## Meet the Bots
+
+- Commander bot: shows pool stats via `/pool` command
+- Fees bot: shows total fees accross all the pools
+- Price bot: shows target token price in stable coin
+- Rewards bot: shows rewards, fees and incentives for the latest epoch
+- TVL bot: shows total value locked across all the pools
 
 ## Pre-reqs
 
@@ -8,7 +24,7 @@
 ## Running locally
 
 - `cp .env.example .env`
-- set `DISCORD_TOKEN` for your bot
+- set `DISCORD_TOKEN_*` for your bot/bots
 - `poetry install`
 - `poetry run python -m bots.__main__`
 
@@ -37,4 +53,5 @@ poetry run nox -rs black
 - click `URL Generator` in the sub menu
 - in `Scopes`, select `bot`
 - in `Bot Permissions`, select `Change Nickname`; for `Command` bot select `Send Messages` and `Use Slash Commands`
-- copy `Generated URL` and open it in a new tab to add bot to a server you control
+- copy `Generated URL` and open it in a new tab to add bot to your server
+- upload emojis from [emojis directory](https://github.com/velodrome-finance/bots/tree/main/emojis) to your discord server (`Server Settings > Emoji`) - these are used to build custom Discord Embed UIs
