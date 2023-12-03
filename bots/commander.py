@@ -63,7 +63,7 @@ async def pool(interaction: discord.Interaction, address_or_query: str):
     """
     if is_address(address_or_query):
         # if /pool receives specific pool address,
-        # show the pool immediately or show in error
+        # show the pool immediately or show an error
         # message if it does not exist
 
         pool = await LiquidityPool.by_address(address_or_query)
