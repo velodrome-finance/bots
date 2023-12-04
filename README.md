@@ -16,8 +16,10 @@
 - Rewards bot: shows rewards, fees and incentives for the latest epoch
 - TVL bot: shows total value locked across all the pools
 
-## Pre-reqs
+## Pre reqs
 
+- [Sugar](https://github.com/velodrome-finance/sugar)
+- [Oracle](https://github.com/velodrome-finance/oracle)
 - [Poetry](https://python-poetry.org/)
 - [Nox](https://nox.thea.codes/en/stable/)
 
