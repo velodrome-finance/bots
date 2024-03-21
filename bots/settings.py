@@ -56,5 +56,8 @@ ORACLE_PRICES_CACHE_MINUTES = int(os.environ["ORACLE_PRICES_CACHE_MINUTES"])
 # default pagination limit for api calls
 GOOD_ENOUGH_PAGINATION_LIMIT = 2000
 
+# pagination limit for pools
+POOL_PAGE_SIZE = 500
+
 # image shown on discord embeds for pool stats
 UI_POOL_STATS_THUMBNAIL = os.environ["UI_POOL_STATS_THUMBNAIL"]
