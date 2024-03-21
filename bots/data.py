@@ -19,7 +19,7 @@ from .settings import (
     ORACLE_PRICES_CACHE_MINUTES,
     PRICE_BATCH_SIZE,
     GOOD_ENOUGH_PAGINATION_LIMIT,
-    POOL_PAGE_SIZE
+    POOL_PAGE_SIZE,
 )
 from .helpers import cache_in_seconds, normalize_address, chunk
 
@@ -230,14 +230,14 @@ class LiquidityPool:
         # Sugar.all returns a tuple with the following structure:
         # { "name": "lp", "type": "address" },          <== 0
         # { "name": "symbol", "type": "string" },       <== 1
-        # { "name": "decimals", "type": "uint8" },      <== 2   
+        # { "name": "decimals", "type": "uint8" },      <== 2
         # { "name": "liquidity", "type": "uint256" },   <== 3
         # { "name": "type", "type": "int24" },          <== 4
         # { "name": "tick", "type": "int24" },          <== 5
-        # { "name": "sqrt_ratio", "type": "uint160" },  <== 6       
+        # { "name": "sqrt_ratio", "type": "uint160" },  <== 6
         # { "name": "token0", "type": "address" },      <== 7
-        # { "name": "reserve0", "type": "uint256" },    <== 8 
-        # { "name": "staked0", "type": "uint256" },     <== 9  
+        # { "name": "reserve0", "type": "uint256" },    <== 8
+        # { "name": "staked0", "type": "uint256" },     <== 9
         # { "name": "token1", "type": "address" },      <== 10
         # { "name": "reserve1", "type": "uint256" },    <== 11
         # { "name": "staked1", "type": "uint256" },     <== 12
@@ -290,9 +290,7 @@ class LiquidityPool:
         pool_offset = 0
 
         while True:
-            pools_batch = await sugar.functions.all(
-                POOL_PAGE_SIZE, pool_offset
-            ).call()
+            pools_batch = await sugar.functions.all(POOL_PAGE_SIZE, pool_offset).call()
 
             pools += pools_batch
 
