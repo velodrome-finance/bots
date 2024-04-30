@@ -1,7 +1,7 @@
 [tool.poetry]
-name = "velodrome-bots"
+name = "aerodrome-bots"
 version = "0.1.0"
-description = "Assorted velodrome Discord bots"
+description = "Assorted Aerodrome Discord bots"
 authors = ["Philip Nuzhnyi <philip.nuzhnyy@gmail.com>"]
 readme = "README.md"
 
